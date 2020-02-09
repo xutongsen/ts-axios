@@ -77,6 +77,7 @@ router.get('/error/timeout', (req, res) => {
     })
   },4000)
 })
+registerExtendRouter()
 app.use(router)
 
 const port = process.env.PORT || 8089
@@ -84,3 +85,48 @@ const port = process.env.PORT || 8089
 module.exports = app.listen(port, () => {
   console.log('sdssd')
 })
+
+
+function registerExtendRouter () {
+  router.get('/extend/get', function(req, res) {
+    res.json({
+      msg: 'this is get'
+    })
+  })
+
+  router.options('/extend/options', function(req, res) {
+    res.json({
+      msg: 'this is options'
+    })
+  })
+  router.delete('/extend/delete', function(req, res) {
+    res.json({
+      msg: 'this is delete'
+    })
+  })
+  router.head('/extend/head', function(req, res) {
+    res.end()
+  })
+  router.post('/extend/post', function(req, res) {
+    res.json(req.body)
+  })
+
+  router.put('/extend/put', function(req, res) {
+    res.json(req.body)
+  })
+
+  router.patch('/extend/patch', function(req, res) {
+    res.json(req.body)
+  })
+
+  router.get('/extend/user', function(req, res) {
+    res.json({
+      code: 0,
+      data: {
+        name: 'ddd',
+        age: 12
+      },
+      msg: 'this is userInfo'
+    })
+  })
+}
