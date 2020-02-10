@@ -27,7 +27,6 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       }
       const responseHeader = parseHeaders(xhr.getAllResponseHeaders())
       const responseData = responseType !== 'text' ? xhr.response : xhr.responseText
-
       handleResponse({
         data: responseData,
         status: xhr.status,

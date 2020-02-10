@@ -78,6 +78,7 @@ router.get('/error/timeout', (req, res) => {
   },4000)
 })
 registerExtendRouter()
+registerInterceptorRouter()
 app.use(router)
 
 const port = process.env.PORT || 8089
@@ -128,5 +129,11 @@ function registerExtendRouter () {
       },
       msg: 'this is userInfo'
     })
+  })
+}
+
+function registerInterceptorRouter() {
+  router.get('/interceptor/get', function(req, res) {
+    res.end('hello xu')
   })
 }
