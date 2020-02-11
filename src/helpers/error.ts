@@ -30,7 +30,7 @@ class AxiosError extends Error {
 export function createError(
   message: string,
   config?: AxiosRequestConfig,
-  code?: null | number | string,
+  code?: null | number,
   request?: any,
   response?: AxiosResponse
 ) {

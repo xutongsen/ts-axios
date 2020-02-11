@@ -4,7 +4,7 @@ import { buildUrl } from '../helpers/url'
 
 import { transfromRequest, transfronResponse } from '../helpers/data'
 
-import { processHeader } from '../helpers/headers'
+import { processHeader, flattenHeaders } from '../helpers/headers'
 
 import xhr from './xhr'
 
@@ -19,6 +19,7 @@ function processConfig(config: AxiosRequestConfig): void {
   config.url = transfromURL(config)
   config.headers = transfromHearder(config)
   config.data = transfromData(config)
+  config.headers = flattenHeaders(config.headers, config.method!)
 }
 
 function transfromURL(config: AxiosRequestConfig): string {

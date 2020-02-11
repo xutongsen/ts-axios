@@ -1,5 +1,4 @@
 import axios from '../../src/index'
-import axios from '../../src/axios';
 
 axios.interceptors.request.use(config=>{
   config.headers.test  += '1'
@@ -41,4 +40,18 @@ axios({
   }
 }).then(res=>{
   console.log(res.data,'结果')
+})
+
+axios({
+  method: 'get',
+  url: '/simple/get',
+  headers:{
+    test:''
+  },
+  params: {
+    a: 1,
+    b: 2
+  }
+}).then(res => {
+  console.log(res)
 })

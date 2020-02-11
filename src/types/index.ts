@@ -22,6 +22,8 @@ export interface AxiosRequestConfig {
   headers?: any //请求头设置 如： content-type
   responseType?: XMLHttpRequestResponseType //返回数据类型
   timeout?: number //超时时间
+
+  [name: string]: any //索引签名 推导类型
 }
 
 export interface AxiosResponse<T = any> {
@@ -48,6 +50,7 @@ export interface Axios {
     request: AxiosInterceptorManager<AxiosRequestConfig>
     response: AxiosInterceptorManager<AxiosResponse>
   }
+  defaults: AxiosRequestConfig
   request<T = any>(config: AxiosRequestConfig): AxiosPromise<T>
   get<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
   delete<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
