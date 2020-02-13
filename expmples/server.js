@@ -80,6 +80,7 @@ router.get('/error/timeout', (req, res) => {
 registerExtendRouter()
 registerInterceptorRouter()
 registerConfigRouter()
+registerCancel()
 app.use(router)
 
 const port = process.env.PORT || 8089
@@ -144,5 +145,20 @@ function registerConfigRouter() {
     res.json({
       data:1
     })
+  })
+}
+
+
+function registerCancel() {
+  router.get('/cancel/get', function (req,res) {
+    setTimeout(()=>{
+      res.json('hello')
+    }, 2000)
+  })
+
+  router.post('/cancel/post', function (req,res) {
+    setTimeout(()=>{
+      res.json(req.body)
+    }, 2000)
   })
 }

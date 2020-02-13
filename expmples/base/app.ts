@@ -93,8 +93,8 @@ axios({
 })
 
 
-var paramsString = "q=URLUtils.searchParams&topic=api"
-var searchParams = new URLSearchParams(paramsString);
+let paramsString = "q=URLUtils.searchParams&topic=api"
+let searchParams = new URLSearchParams(paramsString);
 console.log(searchParams )
 axios({
   method: 'post',

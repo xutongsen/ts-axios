@@ -1,6 +1,6 @@
 import { isData, isPlainObject } from './util'
 
-//处理url 转译问题
+// 处理url 转译问题
 function encode(val: string): string {
   return encodeURIComponent(val)
     .replace(/%40/g, '@')

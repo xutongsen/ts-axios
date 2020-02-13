@@ -6,15 +6,16 @@ import { createError } from '../helpers/error'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
-    let { url, data, method = 'get', headers, responseType, timeout } = config
-
+    let { url, data, method = 'get', headers, responseType, timeout, cancelToken } = config
     let xhr = new XMLHttpRequest()
 
     if (responseType) {
       xhr.responseType = responseType
     }
 
-    if (timeout) [(xhr.timeout = timeout)]
+    if (timeout) {
+      xhr.timeout = timeout
+    }
 
     xhr.open(method.toUpperCase(), url!, true)
 
@@ -42,7 +43,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     }
 
     xhr.ontimeout = function headerTimeout() {
-      reject(createError(`Timeout of ${timeout}ms exceeded`, config, 'ECONNABORTED', xhr))
+      reject(createError(`Timeout of ${timeout}ms exceeded`, config, 1, xhr))
     }
     Object.keys(headers).forEach(name => {
       if (data === null && name.toLowerCase() === 'content-type') {
@@ -51,6 +52,13 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         xhr.setRequestHeader(name, headers[name])
       }
     })
+
+    if (cancelToken) {
+      cancelToken.promise.then(res => {
+        xhr.abort()
+        reject(res)
+      })
+    }
 
     xhr.send(data)
 

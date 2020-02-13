@@ -1,11 +1,11 @@
 import { AxiosRequestConfig, AxiosResponse } from '../types/index'
 class AxiosError extends Error {
   isAxiosError: boolean
-  message: string //错误信息
-  config?: AxiosRequestConfig //请求参数
-  code?: null | number //状态码
-  request?: any //XMLHttpRequest 实例
-  response?: AxiosResponse //返回参数
+  message: string // 错误信息
+  config?: AxiosRequestConfig // 请求参数
+  code?: null | number // 状态码
+  request?: any // XMLHttpRequest 实例
+  response?: AxiosResponse // 返回参数
   constructor(
     message: string,
     config?: AxiosRequestConfig,
@@ -26,7 +26,7 @@ class AxiosError extends Error {
   }
 }
 
-//error 类不让外部访问 工厂实例一个方法让外部调用
+// error 类不让外部访问 工厂实例一个方法让外部调用
 export function createError(
   message: string,
   config?: AxiosRequestConfig,

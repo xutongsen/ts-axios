@@ -2,13 +2,14 @@ import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types/index'
 
 import { buildUrl } from '../helpers/url'
 
-import { transfromRequest, transfronResponse } from '../helpers/data'
+import { flattenHeaders } from '../helpers/headers'
 
-import { processHeader, flattenHeaders } from '../helpers/headers'
+import transfrom from './transfrom'
 
 import xhr from './xhr'
 
 export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromise {
+  throwIfcancellationRequested(config)
   processConfig(config)
   return xhr(config).then(res => {
     return transfromResponseData(res)
@@ -17,8 +18,7 @@ export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromis
 
 function processConfig(config: AxiosRequestConfig): void {
   config.url = transfromURL(config)
-  config.headers = transfromHearder(config)
-  config.data = transfromData(config)
+  config.data = transfrom(config.data, config.headers, config.transfromRequest)
   config.headers = flattenHeaders(config.headers, config.method!)
 }
 
@@ -28,16 +28,13 @@ function transfromURL(config: AxiosRequestConfig): string {
   return buildUrl(url!, params)
 }
 
-function transfromData(config: AxiosRequestConfig) {
-  return transfromRequest(config.data)
-}
-
-function transfromHearder(config: AxiosRequestConfig) {
-  const { headers = {}, data } = config
-  return processHeader(headers, data)
-}
-
 function transfromResponseData(res: AxiosResponse): AxiosResponse {
-  res.data = transfronResponse(res.data)
+  res.data = transfrom(res.data, res.headers, res.config.transfronResponse)
   return res
+}
+
+function throwIfcancellationRequested(config: AxiosRequestConfig): void {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested()
+  }
 }
