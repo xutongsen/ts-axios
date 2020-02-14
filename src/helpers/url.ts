@@ -1,5 +1,10 @@
 import { isData, isPlainObject } from './util'
 
+interface URLOrigin {
+  protocol: string
+  host: string
+}
+
 // 处理url 转译问题
 function encode(val: string): string {
   return encodeURIComponent(val)
@@ -55,4 +60,23 @@ export function buildUrl(url: string, params?: any): string {
   }
 
   return url
+}
+
+export function isURLSameOrigin(requestURL: string): boolean {
+  const parsedOrigin = resolveURL(requestURL)
+  return (
+    parsedOrigin.host === currentOrigin.host && parsedOrigin.protocol === currentOrigin.protocol
+  )
+}
+
+const urlParsingNode = document.createElement('a')
+const currentOrigin = resolveURL(window.location.href)
+
+function resolveURL(url: string): URLOrigin {
+  urlParsingNode.setAttribute('href', url)
+  let { protocol, host } = urlParsingNode
+  return {
+    protocol,
+    host
+  }
 }

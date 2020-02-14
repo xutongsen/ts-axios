@@ -27,7 +27,9 @@ export interface AxiosRequestConfig {
   transfromRequest?: AxiosTransformer | AxiosTransformer[]
   transfronResponse?: AxiosTransformer | AxiosTransformer[]
   cancelToken?: CancelToken
-
+  withCredentials?: boolean
+  xsrfCookieName?: string
+  xsrfHeaderName?: string
   [name: string]: any // 索引签名 推导类型
 }
 
