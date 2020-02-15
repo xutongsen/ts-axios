@@ -51,7 +51,18 @@ module.exports = {
             }
           }
         ]
-      }
+      },
+      {
+        test: /\.css$/,
+        use: [
+             {
+                 loader: 'style-loader'  // 可以把css放在页面上
+             },
+             {
+                 loader: 'css-loader'    // 放在后面的先被解析
+             }
+        ]
+    }
     ]
   },
   

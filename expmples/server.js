@@ -20,7 +20,11 @@ app.use(webpackDevMiddleware(compiles, {
 
 app.use(webpackHotMiddleware(compiles))
 
-app.use(express.static(__dirname))
+app.use(express.static(__dirname, {
+  setHeaders (res) {
+    res.cookie( 'XSRF-TOKEN' , 'hhahahha')
+  }
+}))
 
 app.use(bodyParser.json())
 
@@ -170,5 +174,10 @@ function registerCancel() {
 function reqisterMoreRouter() {
   router.get('/more/get', function (req,res) {
     res.json(req.cookies)
+  })
+
+  router.post('/more/upload', function (req,res) {
+    console.log(req.files,'files')
+    res.json('upload success')
   })
 }
