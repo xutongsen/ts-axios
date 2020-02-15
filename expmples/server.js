@@ -5,9 +5,11 @@ const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpackHotMiddleware = require('webpack-hot-middleware')
 const webpackConfig = require('./webpack.config')
 const cookieParser = require('cookie-parser')
+const atob = require('atob')
 require('./newServer')
 const app = express()
 const compiles = webpack(webpackConfig)
+
 
 
 app.use(webpackDevMiddleware(compiles, {
@@ -179,5 +181,23 @@ function reqisterMoreRouter() {
   router.post('/more/upload', function (req,res) {
     console.log(req.files,'files')
     res.json('upload success')
+  })
+
+  router.post('/more/post', function (req, res) {
+    const auth = req.headers.authorization
+    const [type, credentials] = auth.split(' ')
+    console.log(atob(credentials),'sss')
+    const [username, password] = atob(credentials).split(':')
+    if (type === 'Basic' && username === 'name' && password === 'password') {
+      res.json(req.body)
+    } else {
+      res.status(401)
+      res.end('UnAuthorization')
+    }
+  })
+
+  router.get('/more/304', function (req, res) {
+    res.status(304)
+    res.end()
   })
 }

@@ -2,7 +2,7 @@ import { AxiosRequestConfig } from '../types/index'
 import { isPlainObject, deepMerge } from '../helpers/util'
 let starts = Object.create(null)
 const fromCustomizeArr = ['url', 'params', 'data']
-const startKeysDeepMerge = ['headers']
+const startKeysDeepMerge = ['headers', 'auth']
 
 function defaultStart(defaultVal: any, val: any): any {
   return typeof val !== 'undefined' ? val : defaultVal
