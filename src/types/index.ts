@@ -15,7 +15,9 @@ export type Method =
   | 'OPTIONS'
   | 'patch'
   | 'PATCH'
-
+export interface ParamsSerializerInterface {
+  (params: any): string
+}
 export interface AxiosRequestConfig {
   url?: string // 请求URL
   method?: Method // 请求类型
@@ -30,10 +32,13 @@ export interface AxiosRequestConfig {
   withCredentials?: boolean // cookie 是否允许cookie跨域
   xsrfCookieName?: string // cookie 名称
   xsrfHeaderName?: string // header 中cookie名称
-  onDownloadProgress?: (e: ProgressEvent) => void
-  onUploadProgress?: (e: ProgressEvent) => void
+  onDownloadProgress?: (e: ProgressEvent) => void // 下载callback
+  onUploadProgress?: (e: ProgressEvent) => void // 上传callback
   auth?: AxiosBasicCredentials
-  validateStatus?: (status: number) => boolean
+  validateStatus?: (status: number) => boolean //  自定义status规则callback
+  paramsSerializer?: ParamsSerializerInterface // 自定义转译params
+  baseURL?: string
+
   [name: string]: any // 索引签名 推导类型
 }
 
@@ -70,6 +75,7 @@ export interface Axios {
   post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise<T>
   put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise<T>
   patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise<T>
+  getUri(config?: AxiosRequestConfig): string
 }
 
 export interface AxiosInstance extends Axios {
@@ -78,12 +84,20 @@ export interface AxiosInstance extends Axios {
   <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
 }
 
+export interface AxiosClassStatic {
+  new (config: AxiosRequestConfig): Axios
+}
+
 export interface AxiosStatic extends AxiosInstance {
   create(config?: AxiosRequestConfig): AxiosInstance
 
   CancelToken: CancelTokenStatic
   Cancel: CancelStatic
   isCancel: (value: any) => boolean
+
+  all<T>(promises: Array<T | Promise<T>>): Promise<T[]>
+  spread<T, R>(callback: (...args: T[]) => R): (arr: T[]) => R
+  Axios: AxiosClassStatic
 }
 
 export interface AxiosInterceptorManager<T> {

@@ -35,7 +35,7 @@ startKeysDeepMerge.forEach(item => {
 
 export default function mergeConfig(
   defaultConfig: AxiosRequestConfig,
-  config: AxiosRequestConfig
+  config?: AxiosRequestConfig
 ): AxiosRequestConfig {
   !config && (config = {})
 

@@ -1,6 +1,6 @@
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types/index'
 
-import { buildUrl } from '../helpers/url'
+import { buildUrl, isAbsoluteURL, combineURL } from '../helpers/url'
 
 import { flattenHeaders } from '../helpers/headers'
 
@@ -22,10 +22,14 @@ function processConfig(config: AxiosRequestConfig): void {
   config.headers = flattenHeaders(config.headers, config.method!)
 }
 
-function transfromURL(config: AxiosRequestConfig): string {
-  let { url, params } = config
+export function transfromURL(config: AxiosRequestConfig): string {
+  let { url, params, paramsSerializer, baseURL } = config
 
-  return buildUrl(url!, params)
+  if (baseURL && !isAbsoluteURL(url!)) {
+    url = combineURL(baseURL, url)
+  }
+
+  return buildUrl(url!, params, paramsSerializer)
 }
 
 function transfromResponseData(res: AxiosResponse): AxiosResponse {
