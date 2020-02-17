@@ -10,7 +10,7 @@ let instance = axios.create({
     console.log('hahah ')
     return qs.stringify(data)
   },...(axios.defaults.transfromRequest as AxiosTransformer[]) ],
-  transfronResponse:[...(axios.defaults.transfronResponse as AxiosTransformer[]),function(data) {
+  transfromResponse:[...(axios.defaults.transfromResponse as AxiosTransformer[]),function(data) {
     if (typeof data === 'object') {
       data.b = 2
     }

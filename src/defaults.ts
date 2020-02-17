@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from './types/index'
-import { transfronResponse, transfromRequest } from './helpers/data'
+import { transfromResponse, transfromRequest } from './helpers/data'
 import { processHeader } from './helpers/headers'
 
 const defaults: AxiosRequestConfig = {
@@ -22,9 +22,9 @@ const defaults: AxiosRequestConfig = {
       return transfromRequest(data)
     }
   ],
-  transfronResponse: [
+  transfromResponse: [
     function(data: any): any {
-      return transfronResponse(data)
+      return transfromResponse(data)
     }
   ],
   validateStatus(status: number): boolean {

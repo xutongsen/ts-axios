@@ -33,7 +33,7 @@ export function transfromURL(config: AxiosRequestConfig): string {
 }
 
 function transfromResponseData(res: AxiosResponse): AxiosResponse {
-  res.data = transfrom(res.data, res.headers, res.config.transfronResponse)
+  res.data = transfrom(res.data, res.headers, res.config.transfromResponse)
   return res
 }
 

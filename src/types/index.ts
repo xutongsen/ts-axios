@@ -1,4 +1,4 @@
-import { transfromRequest, transfronResponse } from '../helpers/data'
+import { transfromRequest, transfromResponse } from '../helpers/data'
 import { extend } from '../helpers/util'
 export type Method =
   | 'get'
@@ -27,7 +27,7 @@ export interface AxiosRequestConfig {
   responseType?: XMLHttpRequestResponseType // 返回数据类型
   timeout?: number // 超时时间
   transfromRequest?: AxiosTransformer | AxiosTransformer[] // 请求前data,headers预处理
-  transfronResponse?: AxiosTransformer | AxiosTransformer[] // 返回后data,headers预处理
+  transfromResponse?: AxiosTransformer | AxiosTransformer[] // 返回后data,headers预处理
   cancelToken?: CancelToken // 取消请求
   withCredentials?: boolean // cookie 是否允许cookie跨域
   xsrfCookieName?: string // cookie 名称

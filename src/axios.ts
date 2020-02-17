@@ -26,7 +26,9 @@ axios.all = function all(promises) {
   return Promise.all(promises)
 }
 axios.spread = function spread(callback) {
+  console.log(callback, 'a')
   return function wrap(arr) {
+    console.log(arr, 'arr')
     return callback.apply(null, arr)
   }
 }

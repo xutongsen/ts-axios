@@ -8,7 +8,7 @@ import { isURLSameOrigin } from '../helpers/url'
 
 import cookie from '../helpers/cookie'
 
-import { isFronData } from '../helpers/util'
+import { isFormData } from '../helpers/util'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
@@ -96,7 +96,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     }
 
     function processHeaders(): void {
-      if (isFronData(data)) {
+      if (isFormData(data)) {
         delete headers['Content-Type']
       }
 

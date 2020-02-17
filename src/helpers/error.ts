@@ -3,13 +3,13 @@ class AxiosError extends Error {
   isAxiosError: boolean
   message: string // 错误信息
   config?: AxiosRequestConfig // 请求参数
-  code?: null | number // 状态码
+  code?: null | string // 状态码
   request?: any // XMLHttpRequest 实例
   response?: AxiosResponse // 返回参数
   constructor(
     message: string,
     config?: AxiosRequestConfig,
-    code?: null | number,
+    code?: null | string,
     request?: any,
     response?: AxiosResponse
   ) {
@@ -30,7 +30,7 @@ class AxiosError extends Error {
 export function createError(
   message: string,
   config?: AxiosRequestConfig,
-  code?: null | number,
+  code?: null | string,
   request?: any,
   response?: AxiosResponse
 ) {

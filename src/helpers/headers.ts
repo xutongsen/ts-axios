@@ -18,7 +18,7 @@ export function processHeader(headers: any, data: any): any {
   normalizeHeaderName(headers, 'Content-Type')
   if (isPlainObject(data)) {
     if (headers && !headers['Content-Type']) {
-      headers['Content-Type'] = 'application/json; charset=utf-8'
+      headers['Content-Type'] = 'application/json;charset=utf-8'
     }
   }
   return headers
@@ -31,16 +31,14 @@ export function parseHeaders(headers: string): any {
     return parsed
   }
 
-  headers.split('\r\n').forEach(item => {
-    let [key, value] = item.split(':')
-    key = key.trim().toUpperCase()
+  headers.split('\r\n').forEach(line => {
+    let [key, ...vals] = line.split(':')
+    key = key.trim().toLowerCase()
     if (!key) {
       return
     }
-    if (value) {
-      value = value.trim()
-    }
-    parsed[key] = value
+    const val = vals.join(':').trim()
+    parsed[key] = val
   })
 
   return parsed
