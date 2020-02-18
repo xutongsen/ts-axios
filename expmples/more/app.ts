@@ -105,15 +105,15 @@ import NProgress from 'nprogress'
 //   console.log(e.message, '失败')
 // })
 
-// axios.get('/more/304', {
-//   validateStatus(status) {
-//     return status >= 200 && status < 400
-//   }
-// }).then(res => {
-//   console.log(res, '成功')
-// }).catch((e: AxiosError) => {
-//   console.log(e.message, '失败')
-// })
+axios.get('/more/304', {
+  validateStatus(status) {
+    return status >= 200 && status < 400
+  }
+}).then(res => {
+  console.log(res.config.url, '成功')
+}).catch((e: AxiosError) => {
+  console.log(e.message, '失败')
+})
 
 
 // axios.get('/more/get', {
@@ -172,7 +172,7 @@ axios.all([getA(), getB()])
 
 axios.all([getA(), getB()])
   .then(([resA, resB]) => {
-    console.log(resA.data)
+    console.log(resA.config.url,'config.url')
     console.log(resB.data)
   })
 

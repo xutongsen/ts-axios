@@ -12,13 +12,18 @@ export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromis
   throwIfcancellationRequested(config)
   processConfig(config)
   return xhr(config).then(res => {
-    return transfromResponseData(res)
+    return transformResponseData(res)
+  },e => {
+    if (e && e.response) {
+      e.response = transformResponseData(e.response)
+    }
+    return Promise.reject(e)
   })
 }
 
 function processConfig(config: AxiosRequestConfig): void {
   config.url = transfromURL(config)
-  config.data = transfrom(config.data, config.headers, config.transfromRequest)
+  config.data = transfrom(config.data, config.headers, config.transformRequest)
   config.headers = flattenHeaders(config.headers, config.method!)
 }
 
@@ -32,8 +37,8 @@ export function transfromURL(config: AxiosRequestConfig): string {
   return buildUrl(url!, params, paramsSerializer)
 }
 
-function transfromResponseData(res: AxiosResponse): AxiosResponse {
-  res.data = transfrom(res.data, res.headers, res.config.transfromResponse)
+function transformResponseData(res: AxiosResponse): AxiosResponse {
+  res.data = transfrom(res.data, res.headers, res.config.transformResponse)
   return res
 }
 

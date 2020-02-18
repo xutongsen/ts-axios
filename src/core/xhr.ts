@@ -1,22 +1,17 @@
-import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types/index'
-
+import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types'
 import { parseHeaders } from '../helpers/headers'
-
 import { createError } from '../helpers/error'
-
 import { isURLSameOrigin } from '../helpers/url'
-
 import cookie from '../helpers/cookie'
-
 import { isFormData } from '../helpers/util'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
-    let {
+    const {
+      data = null,
       url,
-      data,
-      method = 'get',
-      headers,
+      method,
+      headers = {},
       responseType,
       timeout,
       cancelToken,
@@ -28,76 +23,90 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       auth,
       validateStatus
     } = config
-    let xhr = new XMLHttpRequest()
 
-    xhr.open(method.toUpperCase(), url!, true)
+    const request = new XMLHttpRequest()
 
-    configRequest()
+    request.open(method!.toUpperCase(), url!, true)
 
-    addEvents()
+    configureRequest() // 配置 request 对象
 
-    processHeaders()
+    addEvents() // 给 request 添加事件处理函数
 
-    processCancel()
+    processHeaders() // 处理请求 headers
 
-    xhr.send(data)
+    processCancel() // 处理请求取消逻辑
 
-    // 请求判断
-    function configRequest(): void {
+    request.send(data)
+
+    // 配置 request 对象
+    function configureRequest(): void {
       if (responseType) {
-        xhr.responseType = responseType
+        request.responseType = responseType
       }
 
       if (timeout) {
-        xhr.timeout = timeout
+        request.timeout = timeout
       }
 
       if (withCredentials) {
-        xhr.withCredentials = withCredentials
+        request.withCredentials = withCredentials
       }
     }
-
-    // 添加事件
+    // 给 request 添加事件处理函数
     function addEvents(): void {
-      xhr.onerror = function headerError() {
-        reject(createError('NetWork Error', config, null, xhr))
-      }
-
-      xhr.ontimeout = function headerTimeout() {
-        reject(createError(`Timeout of ${timeout}ms exceeded`, config, 1, xhr))
-      }
-
-      if (onDownloadProgress) {
-        xhr.onprogress = onDownloadProgress
-      }
-
-      if (onUploadProgress) {
-        xhr.upload.onprogress = onUploadProgress
-      }
-
-      xhr.onreadystatechange = function headerLoad() {
-        if (xhr.readyState !== 4) {
+      request.onreadystatechange = function handleLoad() {
+        if (request.readyState !== 4) {
           return
         }
-        if (xhr.status === 0) {
+
+        if (request.status === 0) {
           return
         }
-        const responseHeader = parseHeaders(xhr.getAllResponseHeaders())
-        const responseData = responseType !== 'text' ? xhr.response : xhr.responseText
-        handleResponse({
+
+        const responseHeaders = parseHeaders(request.getAllResponseHeaders())
+        const responseData =
+          responseType && responseType !== 'text' ? request.response : request.responseText
+        const response: AxiosResponse = {
           data: responseData,
-          status: xhr.status,
-          statusText: xhr.statusText,
-          headers: responseHeader,
+          status: request.status,
+          statusText: request.statusText,
+          headers: responseHeaders,
           config,
-          request: xhr
-        })
+          request
+        }
+        handleResponse(response)
+      }
+
+      request.onerror = function handleError() {
+        reject(createError('Network Error', config, null, request))
+      }
+
+      request.ontimeout = function handleTimeout() {
+        reject(createError(`Timeout of ${timeout} ms exceeded`, config, 'ECONNABORTED', request))
+      }
+
+      /* istanbul ignore next */
+      if (onDownloadProgress) {
+        request.onprogress = onDownloadProgress
+      }
+       /* istanbul ignore next */
+      if (onUploadProgress) {
+        request.upload.onprogress = onUploadProgress
       }
     }
 
+    // 处理请求 headers
     function processHeaders(): void {
+      // 请求的数据是 FormData 类型，删除请求 headers 中的 Content-Type 字段，让浏览器自动根据请求数据设置 Content-Type
       if (isFormData(data)) {
         delete headers['Content-Type']
+      }
+
+      if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
+        const xsrfValue = cookie.read(xsrfCookieName)
+        if (xsrfValue && xsrfHeaderName) {
+          headers[xsrfHeaderName] = xsrfValue
+        }
       }
 
       if (auth) {
@@ -106,26 +115,27 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
       Object.keys(headers).forEach(name => {
         if (data === null && name.toLowerCase() === 'content-type') {
-          delete data[name]
+          delete headers[name]
         } else {
-          xhr.setRequestHeader(name, headers[name])
+          request.setRequestHeader(name, headers[name])
         }
       })
-
-      if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
-        const xsrfValue = cookie.read(xsrfCookieName)
-        if (xsrfValue && xsrfHeaderName) {
-          headers[xsrfHeaderName] = xsrfValue
-        }
-      }
     }
 
+    // 处理请求取消逻辑
     function processCancel(): void {
       if (cancelToken) {
-        cancelToken.promise.then(res => {
-          xhr.abort()
-          reject(res)
-        })
+        cancelToken.promise
+          .then(reason => {
+            request.abort()
+            reject(reason)
+          })
+          .catch(
+            /* istanbul ignore next */
+            () => {
+              // do nothing
+            }
+          )
       }
     }
 
@@ -138,7 +148,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
             `Request failed with status code ${response.status}`,
             config,
             null,
-            xhr,
+            request,
             response
           )
         )

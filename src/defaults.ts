@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from './types/index'
-import { transfromResponse, transfromRequest } from './helpers/data'
+import { transformResponse, transformRequest } from './helpers/data'
 import { processHeader } from './helpers/headers'
 
 const defaults: AxiosRequestConfig = {
@@ -10,21 +10,22 @@ const defaults: AxiosRequestConfig = {
   headers: {
     common: {
       Accept: 'application/json, text/plain, */*'
-    }
+    },
+
   },
 
   xsrfCookieName: 'XSRF-TOKEN',
   xsrfHeaderName: 'X-XSRF-TOKEN',
 
-  transfromRequest: [
+  transformRequest: [
     function(data: any, headers: any): any {
       processHeader(headers, data)
-      return transfromRequest(data)
+      return transformRequest(data)
     }
   ],
-  transfromResponse: [
+  transformResponse: [
     function(data: any): any {
-      return transfromResponse(data)
+      return transformResponse(data)
     }
   ],
   validateStatus(status: number): boolean {
@@ -33,17 +34,18 @@ const defaults: AxiosRequestConfig = {
 }
 
 const methodsNoData: string[] = ['delete', 'get', 'haed', 'options']
-const methodsWithData: string[] = ['post', 'put', 'patch']
 
 methodsNoData.forEach(item => {
-  defaults.headers[item] && (defaults.headers[item] = {})
+  defaults.headers[item] = {}
 })
 
-methodsWithData.forEach(item => {
-  defaults.headers[item] &&
-    (defaults.headers[item] = {
-      Content_Type: 'application/x-www-from-urlencoded '
-    })
+const methodsWithData = ['post', 'put', 'patch']
+
+methodsWithData.forEach(method => {
+  defaults.headers[method] = {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
 })
+
 
 export default defaults

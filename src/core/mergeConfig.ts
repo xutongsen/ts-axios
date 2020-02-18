@@ -1,59 +1,64 @@
-import { AxiosRequestConfig } from '../types/index'
-import { isPlainObject, deepMerge } from '../helpers/util'
-let starts = Object.create(null)
-const fromCustomizeArr = ['url', 'params', 'data']
-const startKeysDeepMerge = ['headers', 'auth']
+import { AxiosRequestConfig } from '../types'
+import { deepMerge, isPlainObject } from '../helpers/util'
 
-function defaultStart(defaultVal: any, val: any): any {
-  return typeof val !== 'undefined' ? val : defaultVal
+const strats = Object.create(null)
+
+function defaultStrat(val1: any, val2: any): any {
+  return typeof val2 !== 'undefined' ? val2 : val1
 }
 
-function fromCustomizeStart(defaultVal: any, val: any): any {
-  if (typeof val !== 'undefined') {
-    return val
+function fromVal2Strat(val1: any, val2: any): any {
+  if (typeof val2 !== 'undefined') {
+    return val2
   }
 }
 
-function deepMergeStart(defaultVal: any, val: any): any {
-  if (isPlainObject(val)) {
-    return deepMerge(defaultVal, val)
-  } else if (typeof val === 'string') {
-    return val
-  } else if (isPlainObject(defaultVal)) {
-    return deepMerge(defaultVal)
-  } else if (typeof defaultVal === 'string') {
-    return defaultVal
+function deepMergeStrat(val1: any, val2: any): any {
+  if (isPlainObject(val2)) {
+    return deepMerge(val1, val2)
+  } else if (typeof val2 !== 'undefined') {
+    return val2
+  } else if (isPlainObject(val1)) {
+    return deepMerge(val1)
+  } else {
+    return val1
   }
 }
 
-fromCustomizeArr.forEach(item => {
-  starts[item] = fromCustomizeStart
+const stratKeysFromVal2 = ['url', 'params', 'data']
+
+stratKeysFromVal2.forEach(key => {
+  strats[key] = fromVal2Strat
 })
-startKeysDeepMerge.forEach(item => {
-  starts[item] = deepMergeStart
+
+const stratKeysDeepMerge = ['headers', 'auth']
+
+stratKeysDeepMerge.forEach(key => {
+  strats[key] = deepMergeStrat
 })
 
 export default function mergeConfig(
-  defaultConfig: AxiosRequestConfig,
-  config?: AxiosRequestConfig
+  config1: AxiosRequestConfig,
+  config2?: AxiosRequestConfig
 ): AxiosRequestConfig {
-  !config && (config = {})
+  !config2 && (config2 = {})
 
-  let newConfig = Object.create(null)
+  const config = Object.create(null)
 
-  for (let key in config) {
+  for (let key in config2) {
     mergeField(key)
   }
 
-  for (let key in defaultConfig) {
-    if (!config[key]) {
+  for (let key in config1) {
+    if (!config2[key]) {
       mergeField(key)
     }
   }
+
   function mergeField(key: string): void {
-    let start = starts[key] || defaultStart
-    newConfig[key] = start(defaultConfig[key], config![key])
+    const strat = strats[key] || defaultStrat
+    config[key] = strat(config1[key], config2![key]) // config2![key] 类型断言不为空
   }
 
-  return newConfig
+  return config
 }

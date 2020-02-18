@@ -6,11 +6,11 @@ import { AxiosTransformer } from '../../src/types/index';
 
 
 let instance = axios.create({
-  transfromRequest:[function(data) {
+  transformRequest:[function(data) {
     console.log('hahah ')
     return qs.stringify(data)
-  },...(axios.defaults.transfromRequest as AxiosTransformer[]) ],
-  transfromResponse:[...(axios.defaults.transfromResponse as AxiosTransformer[]),function(data) {
+  },...(axios.defaults.transformRequest as AxiosTransformer[]) ],
+  transformResponse:[...(axios.defaults.transformResponse as AxiosTransformer[]),function(data) {
     if (typeof data === 'object') {
       data.b = 2
     }
